@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Contact TM Timbre Modulation demo for Dublin Maker 2025">
+    <meta name="keywords" content="timbre modulation, music synthesis, steganography, esoterica, arcana">
+    <meta name="author" content="Ted Burke">
+    <title>Timbre modulation (TM) decoder and visualizer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<h1>Timbre modulation decoder and visualizer</h1>
+
+<canvas id="drawingCanvas"></canvas>
+
+<div id="controls">
+    <button id="startButton" onclick="startScanning()">START</button> <br>
+    <button id="pauseButton" onclick="pauseScanning()" disabled="disabled">PAUSE</button>
+</div>
+
+<div id="status">Paused</div>
+
+<canvas id="spectrumCanvas" width="320" height="240"></canvas>
+
+<div id="footer"> Copyright 2025 Ted Burke. See <a href="http://tedz.eu/">tedz.eu</a> for more details. </div>
+
+<script src="decoder.js"></script>
+
+</body></html>
