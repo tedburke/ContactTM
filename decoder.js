@@ -1,44 +1,40 @@
 "use strict";
 
 // Global identifiers for elements, etc.
-var drawingCanvas = document.getElementById("drawingCanvas");
-var spectrumCanvas = document.getElementById("spectrumCanvas");
-var startButton = document.getElementById("startButton");
-var pauseButton = document.getElementById("pauseButton");
+const drawingCanvas = document.getElementById("drawingCanvas");
+const spectrumCanvas = document.getElementById("spectrumCanvas");
+const startButton = document.getElementById("startButton");
+const pauseButton = document.getElementById("pauseButton");
 
 //var N=1024, n;
 //var buffer = [], binary = [], s = [];
 
 var scanningState = 0;    // 1 is scanning, 0 is paused
 
-window.onload = function()
-{
-    console.log("Hello from window.onload function");
+console.log("Hello from window.onload function");
 
-    // Connect buttons to callbacks
-    startButton.onclick = startScanning;
-    pauseButton.onclick = pauseScanning;
-    pauseButton.disabled = true;
+// Connect buttons to event listeners
+startButton.addEventListener("click", startScanning);
+pauseButton.addEventListener("click", pauseScanning);
+pauseButton.disabled = true;
 
-    // Error callback function for getUserMedia method
-    var errorCallback = function(error) {console.log("Video capture error: ", error.code);};
+// Error callback function for getUserMedia method
+var errorCallback = function(error) {console.log("Video capture error: ", error.code);};
 
-    // For cross-browser compatibility, select getUserMedia method for current browser
-    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
-        navigator.mozGetUserMedia || navigator.msGetUserMedia;
+// For cross-browser compatibility, select getUserMedia method for current browser
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
-    // Open video capture stream
-    /*
+// Open video capture stream
+/*
     navigator.getUserMedia({video:{mandatory:{minWidth:vidw,maxWidth:vidw,minHeight:vidh,maxHeight:vidh}}}, function(stream)
         {
             //vid.src = window.URL.createObjectURL(stream);
             vid.srcObject=stream;
             vid.play();
         }, errorCallback);
-    */
+        */
 
-    window.setInterval(draw, 100);
-}
+window.setInterval(draw, 100);
 
 function startScanning()
 {
