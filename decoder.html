@@ -1,31 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="description" content="Contact TM Timbre Modulation demo for Dublin Maker 2025">
-    <meta name="keywords" content="timbre modulation, music synthesis, steganography, esoterica, arcana">
-    <meta name="author" content="Ted Burke">
-    <title>Timbre modulation (TM) decoder and visualizer</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
 
-<body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="Contact TM Timbre Modulation demo for Dublin Maker 2025">
+        <meta name="keywords" content="timbre modulation, music synthesis, steganography, esoterica, arcana">
+        <meta name="author" content="Ted Burke">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/png" href="favicon.png">
+        <title>Timbre modulation (TM) decoder and visualizer</title>
+        <link rel="stylesheet" href="decoder.css">
+    </head>
 
-<h1>Timbre modulation decoder and visualizer</h1>
+    <body>
+        <h1>Timbre modulation decoder and visualizer</h1>
+        <canvas id="drawingCanvas"></canvas>
+        <button id="startButton">START</button>
+        <button id="pauseButton">PAUSE</button>
+        <div id="status">Paused</div>
+        <canvas id="spectrumCanvas"></canvas>
+        <div id="footer">
+            Copyright 2025 Ted Burke.
+            See <a href="http://tedz.eu/">tedz.eu</a> for more details.
+        </div>
+        <script src="decoder.js"></script>
+    </body>
 
-<canvas id="drawingCanvas"></canvas>
+</html>
 
-<div id="controls">
-    <button id="startButton" onclick="startScanning()">START</button> <br>
-    <button id="pauseButton" onclick="pauseScanning()" disabled="disabled">PAUSE</button>
-</div>
-
-<div id="status">Paused</div>
-
-<canvas id="spectrumCanvas" width="320" height="240"></canvas>
-
-<div id="footer"> Copyright 2025 Ted Burke. See <a href="http://tedz.eu/">tedz.eu</a> for more details. </div>
-
-<script src="decoder.js"></script>
-
-</body></html>
