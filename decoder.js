@@ -3,11 +3,10 @@
 // Global identifiers for elements, etc.
 const drawingCanvas = document.getElementById("drawingCanvas");
 const spectrumCanvas = document.getElementById("spectrumCanvas");
-const startButton = document.getElementById("startButton");
-const pauseButton = document.getElementById("pauseButton");
 
-let drawingCtx, spectrumCtx; // canvas contexts
-let audioCtx; // audio context
+let drawingCtx;  // drawing canvas context
+let spectrumCtx; // spectrum canvas context
+let audioCtx;    // audio context
 
 window.onresize = function() {
     drawingCanvas.width = drawingCanvas.getBoundingClientRect().width;
@@ -15,20 +14,10 @@ window.onresize = function() {
     spectrumCanvas.width = spectrumCanvas.getBoundingClientRect().width;
     spectrumCanvas.height = spectrumCanvas.getBoundingClientRect().height;
     drawingCtx = drawingCanvas.getContext('2d', { alpha: false });
-    spectrumCtx = drawingCanvas.getContext('2d', { alpha: false });
+    spectrumCtx = spectrumCanvas.getContext('2d', { alpha: false });
 };
 
 window.onresize();
-
-var scanningState = 0;    // 1 is scanning, 0 is paused
-
-// Connect buttons to event listeners
-startButton.addEventListener("click", startScanning);
-pauseButton.addEventListener("click", pauseScanning);
-pauseButton.disabled = true;
-
-// Error callback function for getUserMedia method
-var errorCallback = function(error) {console.log("Video capture error: ", error.code);};
 
 if (navigator.mediaDevices.getUserMedia)
 {
@@ -37,7 +26,7 @@ if (navigator.mediaDevices.getUserMedia)
     let onSuccess = function(stream) {
         console.log("onSuccess function");
 
-        visualize(stream);
+        processAudio(stream);
     }
 
     let onError = function(err) {
@@ -51,18 +40,20 @@ else
     console.log("mediaDevices.getUserMedia() is not supported.");
 }
 
-function visualize(stream) {
+function processAudio(stream) {
     // Set up audio context, buffer, and analyser
     if (!audioCtx) {
         audioCtx = new AudioContext();
     }
     const source = audioCtx.createMediaStreamSource(stream);
-    const bufferLength = 2048;
+    const N = 2048;
+    const data = new Uint8Array(N);
     const analyser = audioCtx.createAnalyser();
-    analyser.fftSize = bufferLength;
-    const dataArray = new Uint8Array(bufferLength);
+    analyser.fftSize = N;
     source.connect(analyser);
 
+    // Call the draw function once and it will submit a request
+    // to be called again at each screen refresh 
     draw();
 
     function draw() {
@@ -73,16 +64,16 @@ function visualize(stream) {
         // screen refresh
         requestAnimationFrame(draw);
 
-        analyser.getByteTimeDomainData(dataArray);
+        analyser.getByteTimeDomainData(data);
         
         spectrumCtx.fillStyle = "rgb(100 100 100)";
         spectrumCtx.fillRect(0, 0, w, h);
         spectrumCtx.lineWidth = 1.0;
         spectrumCtx.strokeStyle = "rgb(0 0 0)";
         spectrumCtx.beginPath();
-        spectrumCtx.moveTo(0, dataArray[0]);
+        spectrumCtx.moveTo(0, data[0]);
         for (let n = 0 ; n < w ; ++n) {
-            spectrumCtx.lineTo(n, dataArray[n]);
+            spectrumCtx.lineTo(n, data[n]);
         }
         spectrumCtx.stroke();
     }
@@ -95,22 +86,6 @@ function visualize(stream) {
 // function that continuously requests that it be re-called, using
 // requestAnimationFrame(draw).
 //window.setInterval(draw, 100);
-
-function startScanning()
-{
-    console.log("startScanning function");
-    pauseButton.disabled = false;
-    startButton.disabled = true;
-    scanningState = 1;
-}
-
-function pauseScanning()
-{
-    console.log("pauseScanning function");
-    pauseButton.disabled = true;
-    startButton.disabled = false;
-    scanningState = 0;
-}
 
 // This is currently not being used
 function olddraw()
@@ -160,6 +135,6 @@ function olddraw()
     ctx.textAlign = "center";
 
     // Display status
-    document.getElementById("status").innerHTML = scanningState ? 'Scanning' : 'Paused';
+    //document.getElementById("status").innerHTML = scanningState ? 'Scanning' : 'Paused';
 }
 
