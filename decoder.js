@@ -35,7 +35,7 @@ if (navigator.mediaDevices.getUserMedia)
     }
 
     let onError = function(err) {
-        debugPrint("onError function");
+        debugPrint("onError function:" + err.name);
     }
 
     navigator.mediaDevices.getUserMedia({audio:true}).then(onSuccess, onError);
