@@ -8,6 +8,11 @@ let drawingCtx;  // drawing canvas context
 let spectrumCtx; // spectrum canvas context
 let audioCtx;    // audio context
 
+function debugPrint(str) {
+    console.log(str);
+    document.getElementById("status").innerHTML += '<br>' + str;
+}
+
 window.onresize = function() {
     drawingCanvas.width = drawingCanvas.getBoundingClientRect().width;
     drawingCanvas.height = drawingCanvas.getBoundingClientRect().height;
@@ -21,23 +26,23 @@ window.onresize();
 
 if (navigator.mediaDevices.getUserMedia)
 {
-    console.log("mediaDevices.getUserMedia() is supported.");
+    debugPrint("mediaDevices.getUserMedia() is supported.");
     
     let onSuccess = function(stream) {
-        console.log("onSuccess function");
+        debugPrint("onSuccess function");
 
         processAudio(stream);
     }
 
     let onError = function(err) {
-        console.log("onError function");
+        debugPrint("onError function");
     }
 
     navigator.mediaDevices.getUserMedia({audio:true}).then(onSuccess, onError);
 }
 else
 {
-    console.log("mediaDevices.getUserMedia() is not supported.");
+    debugPrint("mediaDevices.getUserMedia() is not supported.");
 }
 
 function processAudio(stream) {
