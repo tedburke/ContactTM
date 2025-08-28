@@ -6,7 +6,8 @@ const spectrumCanvas = document.getElementById("spectrumCanvas");
 const startButton = document.getElementById("startButton");
 const pauseButton = document.getElementById("pauseButton");
 
-var drawingCtx, spectrumCtx; // canvas contexts
+let drawingCtx, spectrumCtx; // canvas contexts
+let audioCtx; // audio context
 
 window.onresize = function() {
     drawingCanvas.width = drawingCanvas.getBoundingClientRect().width;
@@ -18,9 +19,6 @@ window.onresize = function() {
 };
 
 window.onresize();
-
-//var N=1024, n;
-//var buffer = [], binary = [], s = [];
 
 var scanningState = 0;    // 1 is scanning, 0 is paused
 
@@ -38,15 +36,8 @@ if (navigator.mediaDevices.getUserMedia)
     
     let onSuccess = function(stream) {
         console.log("onSuccess function");
-        //const mediaRecorder = new MediaRecorder(stream);
 
         visualize(stream);
-
-        /*
-        mediaRecorded.ondataavailable = function(e) {
-            console.log("data");
-        }
-        */
     }
 
     let onError = function(err) {
@@ -100,7 +91,10 @@ function visualize(stream) {
 // For cross-browser compatibility, select getUserMedia method for current browser
 //navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
-window.setInterval(draw, 100);
+// Disable this for now, because the visualize function creates a draw
+// function that continuously requests that it be re-called, using
+// requestAnimationFrame(draw).
+//window.setInterval(draw, 100);
 
 function startScanning()
 {
@@ -118,15 +112,9 @@ function pauseScanning()
     scanningState = 0;
 }
 
+// This is currently not being used
 function olddraw()
 {
-    /*
-    vidctx.drawImage(vid,0,0);
-    var idata = vidctx.getImageData(0,0,vidw,vidh); // get pixel data
-    var data = idata.data;                          // extract data
-    var x, y, m, left=0, right=0;
-    */
-
     // Get contexts for both canvases
     let ctx = drawingCanvas.getContext('2d', { alpha: false });
     let W = ctx.canvas.width;
