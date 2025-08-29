@@ -1,21 +1,18 @@
 //
-// synth.c - audio synth experiment
+// synth.c - audio synth experiment for Contact TM demo
 // Author: Ted Burke
-// Last updated: 29 Aug 2025
+// Last updated: 30 Aug 2025 (for Dublin Maker 2025)
 //
 // To compile:
 //   gcc synth.c -o synth -lm
 //
 // To run:
-//   ./synth | aplay -f S16_LE -c1 -r44100
 //   ./synth | aplay -f FLOAT_LE -c1 -r44100
 //
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <math.h>
-#include <unistd.h>
 
 int main()
 {
@@ -29,6 +26,7 @@ int main()
     // Calculate frequency for each note number
     for (sn = 0 ; sn < 128 ; ++sn) f[sn] = 440.0 * pow(2, (sn-69.0)/12.0);
     for (sn = 0 ; sn < 128 ; ++sn) fprintf(stderr, "%c%10.3lf", sn%12 ? ' ' : '\n', f[sn]);
+    fprintf(stderr, "\n");
 
     // Allocate buffer to store audio samples
     N = Fs * 5;     // specify 5-second buffer
