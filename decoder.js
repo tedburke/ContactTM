@@ -65,10 +65,6 @@ function processAudio(stream) {
         const w = spectrumCanvas.width;
         const h = spectrumCanvas.height;
 
-        // Ask for this function to be called again at next
-        // screen refresh
-        requestAnimationFrame(draw);
-
         analyser.getByteTimeDomainData(data);
         
         spectrumCtx.fillStyle = "rgb(100 100 100)";
@@ -81,6 +77,10 @@ function processAudio(stream) {
             spectrumCtx.lineTo(n, data[n]);
         }
         spectrumCtx.stroke();
+        
+        // Ask for this function to be called again at next
+        // screen refresh
+        requestAnimationFrame(draw);
     }
 }
 
