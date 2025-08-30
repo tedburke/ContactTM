@@ -10,7 +10,7 @@ let audioCtx;    // audio context
 
 function debugPrint(str) {
     console.log(str);
-    document.getElementById("status").innerHTML += '<br>' + str;
+    //document.getElementById("status").innerHTML += '<br>' + str;
 }
 
 window.onresize = function() {
@@ -21,6 +21,11 @@ window.onresize = function() {
     drawingCtx = drawingCanvas.getContext('2d', { alpha: false });
     spectrumCtx = spectrumCanvas.getContext('2d', { alpha: false });
 };
+
+// Disable this for now, because the visualize function creates a draw
+// function that continuously requests that it be re-called, using
+// requestAnimationFrame(draw).
+//window.setInterval(draw, 100);
 
 window.onresize();
 
@@ -69,9 +74,6 @@ function processAudio(stream) {
         analyser.getFloatTimeDomainData(timeDomainData);
         analyser.getFloatFrequencyData(freqDomainData);
         
-        //analyser.getByteTimeDomainData(data);
-        //analyser.getByteFrequencyData(data);
-        
         let w = drawingCanvas.width;
         let h = drawingCanvas.height;
 
@@ -80,9 +82,9 @@ function processAudio(stream) {
         drawingCtx.lineWidth = 2.0;
         drawingCtx.strokeStyle = "rgb(0 0 0)";
         drawingCtx.beginPath();
-        drawingCtx.moveTo(0, timeDomainData[0]);
+        drawingCtx.moveTo(0, h*(0.5 - 0.4*timeDomainData[0]));
         for (let n = 0 ; n < w ; ++n) {
-            drawingCtx.lineTo(n, (1 - timeDomainData[n]) * h/2);
+            drawingCtx.lineTo(n, h*(0.5 - 0.4*timeDomainData[n]));
         }
         drawingCtx.stroke();
         
@@ -97,7 +99,7 @@ function processAudio(stream) {
         spectrumCtx.moveTo(0, freqDomainData[0]);
         let bins = analyser.frequencyBinCount / 4; // only plot one quarter of the bins
         for (let n = 0 ; n < bins ; ++n) {
-            spectrumCtx.lineTo(n * w / bins, h - (140 + freqDomainData[n]));
+            spectrumCtx.lineTo(n * w / bins, h * (0.8 - 0.6*(140 + freqDomainData[n])/140.0));
         }
         spectrumCtx.stroke();
         
@@ -105,64 +107,5 @@ function processAudio(stream) {
         // screen refresh
         requestAnimationFrame(draw);
     }
-}
-
-// For cross-browser compatibility, select getUserMedia method for current browser
-//navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
-
-// Disable this for now, because the visualize function creates a draw
-// function that continuously requests that it be re-called, using
-// requestAnimationFrame(draw).
-//window.setInterval(draw, 100);
-
-// This is currently not being used
-function olddraw()
-{
-    // Get contexts for both canvases
-    let ctx = drawingCanvas.getContext('2d', { alpha: false });
-    let W = ctx.canvas.width;
-    let H = ctx.canvas.height;
-
-    let dx = 4, dy = 4;
-
-    // Draw drawing
-    ctx.clearRect(0, 0, W, H);
-    ctx.strokeStyle = "#0000ff";
-    ctx.lineWidth = 1.0;
-    ctx.beginPath();
-    ctx.moveTo(dx, dy);
-    ctx.lineTo(dx, H - dy);
-    ctx.lineTo(W - dx, H - dy);
-    ctx.lineTo(W - dx, dy);
-    ctx.closePath();
-    ctx.stroke();
-
-    ctx.font="20px Arial";
-    ctx.fillStyle = "#BFBFBF";
-    ctx.textAlign = "center";
-    var m;
-    for (m = 0 ; m <= W ; m += 40)
-    {
-        ctx.fillText(m, m, 120);
-    }
-    ctx.stroke();
-
-    ctx = spectrumCanvas.getContext('2d', { alpha: false });
-    W = ctx.canvas.width;
-    H = ctx.canvas.height;
-
-    // Draw spectrum graph
-    ctx.clearRect(0, 0, W, H);
-    ctx.strokeStyle = "#ff0000";
-    ctx.lineWidth = 4.0;
-    ctx.strokeRect(2*dx, 2*dx, W-4*dx, H-4*dx);
-    
-    // Check if current buffer matches code
-    ctx.font="20px Arial";
-    ctx.fillStyle = "#000000";
-    ctx.textAlign = "center";
-
-    // Display status
-    //document.getElementById("status").innerHTML = scanningState ? 'Scanning' : 'Paused';
 }
 
