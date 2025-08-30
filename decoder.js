@@ -52,29 +52,52 @@ function processAudio(stream) {
     }
     const source = audioCtx.createMediaStreamSource(stream);
     const N = 2048;
-    const data = new Uint8Array(N);
+    //const data = new Uint8Array(N);
     const analyser = audioCtx.createAnalyser();
     analyser.fftSize = N;
+    analyser.smoothingTimeConstant = 0;
     source.connect(analyser);
+
+    const timeDomainData = new Float32Array(analyser.fftSize);
+    const freqDomainData = new Float32Array(analyser.frequencyBinCount);
 
     // Call the draw function once and it will submit a request
     // to be called again at each screen refresh 
     draw();
 
     function draw() {
-        const w = spectrumCanvas.width;
-        const h = spectrumCanvas.height;
-
-        analyser.getByteTimeDomainData(data);
+        analyser.getFloatTimeDomainData(timeDomainData);
+        analyser.getFloatFrequencyData(freqDomainData);
         
-        spectrumCtx.fillStyle = "rgb(100 100 100)";
+        //analyser.getByteTimeDomainData(data);
+        //analyser.getByteFrequencyData(data);
+        
+        let w = drawingCanvas.width;
+        let h = drawingCanvas.height;
+
+        drawingCtx.fillStyle = "rgb(255 255 255)";
+        drawingCtx.fillRect(0, 0, w, h);
+        drawingCtx.lineWidth = 2.0;
+        drawingCtx.strokeStyle = "rgb(0 0 0)";
+        drawingCtx.beginPath();
+        drawingCtx.moveTo(0, timeDomainData[0]);
+        for (let n = 0 ; n < w ; ++n) {
+            drawingCtx.lineTo(n, (1 - timeDomainData[n]) * h/2);
+        }
+        drawingCtx.stroke();
+        
+        w = spectrumCanvas.width;
+        h = spectrumCanvas.height;
+
+        spectrumCtx.fillStyle = "rgb(255 255 255)";
         spectrumCtx.fillRect(0, 0, w, h);
         spectrumCtx.lineWidth = 1.0;
         spectrumCtx.strokeStyle = "rgb(0 0 0)";
         spectrumCtx.beginPath();
-        spectrumCtx.moveTo(0, data[0]);
-        for (let n = 0 ; n < w ; ++n) {
-            spectrumCtx.lineTo(n, data[n]);
+        spectrumCtx.moveTo(0, freqDomainData[0]);
+        let bins = analyser.frequencyBinCount / 4; // only plot one quarter of the bins
+        for (let n = 0 ; n < bins ; ++n) {
+            spectrumCtx.lineTo(n * w / bins, h - (140 + freqDomainData[n]));
         }
         spectrumCtx.stroke();
         
